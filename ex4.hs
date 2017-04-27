@@ -39,12 +39,24 @@ makeBody (Html a) = createHtml ("<body>" ++ a ++ "</body>")
 
 makeDocument :: Doctype -> Document
 makeDocument Html4 = Document Html4 (makeHead (Html "")) (makeBody (Html ""))
+makeDocument Html5 = Document Html5 (makeHead (Html "")) (makeBody (Html ""))
+makeDocument XHtml = Document XHtml (makeHead (Html "")) (makeBody (Html ""))
 --renderDocument Html5 =
 --renderDocument XHtml =
 
--- renderDocument :: Document -> String
+renderDocument :: Document -> String
 renderDocument Document{
                        doctype = Html4
                        , headSection=headSection
                        , bodySection=bodySection
                        } = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+renderDocument Document{
+                      doctype = Html5
+                      , headSection=headSection
+                      , bodySection=bodySection
+                      } = "<!DOCTYPE html>" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+renderDocument Document{
+                      doctype = XHtml
+                      , headSection=headSection
+                      , bodySection=bodySection
+                      } = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
