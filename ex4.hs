@@ -2,7 +2,11 @@
 
 import Data.List
 
-newtype Html = Html String deriving Show
+data Html = Text String | Container { containerTag :: String
+                                    , containerAttributes :: [(String,String)]
+                                    , containerChildren :: [Html]
+                                    } deriving (Show)
+
 data Doctype = Html4 | Html5 | XHtml deriving Show -- Html4 sollte Html heißen
 data Document = Document { doctype :: Doctype
                          , headSection :: Html
@@ -13,7 +17,11 @@ createHtml :: String -> Html
 createHtml string = Html string
 
 renderHtml :: Html -> String
-renderHtml (Html string) = string
+renderHtml Container{
+                    containerTag=containerTag
+                    , containerAttributes=(containerAttribute:containerAttributes)
+                    , containerChildren=(containerChild:containerChildren)
+                    } = "<" ++ containerTag ++ ">" ++ (renderHtml Container containerTag containerAttributes containerChildren)
 
 makeTextNode :: String -> Html
 makeTextNode a =
@@ -50,11 +58,13 @@ renderDocument Document{
                        , headSection=headSection
                        , bodySection=bodySection
                        } = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+
 renderDocument Document{
                       doctype = Html5
                       , headSection=headSection
                       , bodySection=bodySection
                       } = "<!DOCTYPE html>" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+
 renderDocument Document{
                       doctype = XHtml
                       , headSection=headSection
