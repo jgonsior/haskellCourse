@@ -1,27 +1,27 @@
 --module HtmlLibrary (renderHtml(Html)) where
 
-import Data.List
+import           Data.List
 
-data Html = Text String | Container { containerTag :: String
-                                    , containerAttributes :: [(String,String)]
-                                    , containerChildren :: [Html]
-                                    } deriving (Show)
+data Html = String | Container { containerTag        :: String
+                               , containerAttributes :: [(String,String)]
+                               , containerChildren   :: [Html]
+                               } deriving (Show)
 
 data Doctype = Html4 | Html5 | XHtml deriving Show -- Html4 sollte Html heißen
-data Document = Document { doctype :: Doctype
+data Document = Document { doctype     :: Doctype
                          , headSection :: Html
                          , bodySection :: Html
                          } deriving (Show)
 
 createHtml :: String -> Html
-createHtml string = Html string
+createHtml string = Container{containerTag="", containerChildren=[string]}
 
 renderHtml :: Html -> String
 renderHtml Container{
                     containerTag=containerTag
                     , containerAttributes=(containerAttribute:containerAttributes)
                     , containerChildren=(containerChild:containerChildren)
-                    } = "<" ++ containerTag ++ ">" ++ (renderHtml Container containerTag containerAttributes containerChildren)
+                    } = "<" ++ containerTag ++ ">" ++ (renderHtml Container containerTag containerAttributes containerChildren) ++ "</" ++ containerTag ++ ">"
 
 makeTextNode :: String -> Html
 makeTextNode a =
@@ -30,28 +30,28 @@ makeTextNode a =
     else createHtml a
 
 makeDiv :: Html -> Html
-makeDiv (Html a) = createHtml ("<div>" ++ a ++ "</div>")
+makeDiv a = Container{containerTag="div", containerAttributes="", containerChildren = [a]}
 
 makeI :: Html -> Html
-makeI (Html a) = createHtml ("<i>" ++ a ++ "</i>")
+makeI a = Container{containerTag="i", containerAttributes="", containerChildren = [a]}
 
 makeSpan :: Html -> Html
-makeSpan (Html a) = createHtml ("<span>" ++ a ++ "</span>")
+makeSpan a = Container{containerTag="span", containerAttributes="", containerChildren = [a]}
 
 makeHead :: Html -> Html
-makeHead (Html a) = createHtml ("<head>" ++ a ++ "</head>")
+makeHead a = Container{containerTag="head", containerAttributes="", containerChildren = [a]}
 
 makeBody :: Html -> Html
-makeBody (Html a) = createHtml ("<body>" ++ a ++ "</body>")
+makeBody a = Container{containerTag="body", containerAttributes="", containerChildren = [a]}
 
 
 makeDocument :: Doctype -> Document
-makeDocument Html4 = Document Html4 (makeHead (Html "")) (makeBody (Html ""))
-makeDocument Html5 = Document Html5 (makeHead (Html "")) (makeBody (Html ""))
-makeDocument XHtml = Document XHtml (makeHead (Html "")) (makeBody (Html ""))
+makeDocument Html4 = Document Html4 (makeHead ("")) (makeBody (""))
+makeDocument Html5 = Document Html5 (makeHead ("")) (makeBody (""))
+makeDocument XHtml = Document XHtml (makeHead ("")) (makeBody (""))
 --renderDocument Html5 =
 --renderDocument XHtml =
-
+{-
 renderDocument :: Document -> String
 renderDocument Document{
                        doctype = Html4
@@ -70,3 +70,4 @@ renderDocument Document{
                       , headSection=headSection
                       , bodySection=bodySection
                       } = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+-}
