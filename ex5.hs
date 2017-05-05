@@ -1,6 +1,7 @@
 import System.FilePath
 import System.Directory
 import System.Environment
+import System.IO
 
 reverseList :: [a] -> [a]
 reverseList [] = []
@@ -19,11 +20,35 @@ bulkRename filePath suffix = do
   mapM (rename suffix) correctedFilePath
   return ()
 
+
+squash :: [String] -> String
+squash [x] = x
+squash (x:xs) = x ++ (squash xs)
+
+combineContent :: FilePath -> String -> IO ()
+combineContent inputDirectory outputFile = do
+  files <- getDirectoryContents inputDirectory
+  let correctedFilePath = map ((inputDirectory ++ "/") ++ )
+                  (filter (/= "..") (filter (/= ".") files))
+  content <- mapM (readFile) correctedFilePath
+  writeFile outputFile (squash content)
+  return ()
+
+combineContentWithHandle :: FilePath -> String -> IO ()
+combineContentWithHandle inputDirectory outputFile = do
+  files <- getDirectoryContents inputDirectory
+  let correctedFilePath = map ((inputDirectory ++ "/") ++ )
+                  (filter (/= "..") (filter (/= ".") files))
+  withFile outputFile WriteMode (\handle -> do
+    mapM putStr (mapM readFile correctedFilePath))
+  return ()
+
+{-
 main :: IO ()
 main = do
   [filePath, suffix] <- getArgs
   bulkRename filePath suffix
-{-
+
 main :: IO ()
 main = do
   input <- getLine

@@ -19,7 +19,7 @@ and' :: MyBoolean -> MyBoolean -> MyBoolean
 and' Yes Yes = Yes
 and' Yes No  = No
 and' No Yes  = No
-and' No No  = No
+and' No No   = No
 
 not'' t =
   case t of
