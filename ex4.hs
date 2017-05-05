@@ -33,32 +33,33 @@ renderHtml Container{tag=tag
                          ++ "</" ++ tag ++ ">"
 
 makeTextNode :: String -> Html
-makeTextNode a =
-  if isInfixOf ['<', '>', '=', '&'] a
+makeTextNode text =
+  if isInfixOf ['<', '>', '=', '&'] text
     then error "Not valid HTML code"
-    else createHtml a
-{-
+    else (Text text)
+
+
 makeDiv :: Html -> Html
-makeDiv a = Container{tag="div", attributes="", children = [a]}
+makeDiv a = Container{tag="div", attributes=[], children = [a]}
 
 makeI :: Html -> Html
-makeI a = Container{tag="i", attributes="", children = [a]}
+makeI a = Container{tag="i", attributes=[], children = [a]}
 
 makeSpan :: Html -> Html
-makeSpan a = Container{tag="span", attributes="", children = [a]}
+makeSpan a = Container{tag="span", attributes=[], children = [a]}
 
-makeHead :: Html -> Html
-makeHead a = Container{tag="head", attributes="", children = [a]}
+makeHead :: Html
+makeHead = Container{tag="head", attributes=[], children = []}
 
-makeBody :: Html -> Html
-makeBody a = Container{tag="body", attributes="", children = [a]}
+makeBody :: Html
+makeBody = Container{tag="body", attributes=[], children = []}
 
 
 makeDocument :: Doctype -> Document
-makeDocument Html4 = Document Html4 (makeHead ("")) (makeBody (""))
-makeDocument Html5 = Document Html5 (makeHead ("")) (makeBody (""))
-makeDocument XHtml = Document XHtml (makeHead ("")) (makeBody (""))
--}
+makeDocument Html4 = Document Html4 makeHead makeBody
+makeDocument Html5 = Document Html5 makeHead makeBody
+makeDocument XHtml = Document XHtml makeHead makeBody
+
 --renderDocument Html5 =
 --renderDocument XHtml =
 {-
