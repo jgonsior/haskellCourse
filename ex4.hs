@@ -23,7 +23,7 @@ renderAttributes ((name, value):attributes) = name ++ "=\"" ++ value ++ "\""
 
 renderHtml :: Html -> String
 renderHtml (Text text) = text
-renderHtml Container{children=[]} = ""
+renderHtml Container{tag=tag, children=[]} = "<" ++ tag ++ ">" ++ "</" ++ tag ++ ">"
 renderHtml Container{tag=tag
                      , attributes=attributes
                      , children=(child:children)
@@ -62,7 +62,6 @@ makeDocument XHtml = Document XHtml makeHead makeBody
 
 --renderDocument Html5 =
 --renderDocument XHtml =
-{-
 renderDocument :: Document -> String
 renderDocument Document{
                        doctype = Html4
@@ -81,4 +80,3 @@ renderDocument Document{
                       , headSection=headSection
                       , bodySection=bodySection
                       } = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
--}
