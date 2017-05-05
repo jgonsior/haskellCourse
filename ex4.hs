@@ -1,8 +1,8 @@
 --module HtmlLibrary (renderHtml(Html)) where
 
-import Data.List
+import           Data.List
 
-data Html = Text String | Container { tag        :: String
+data Html = Text String | Container { tag   :: String
                                , attributes :: [(String,String)]
                                , children   :: [Html]
                                } deriving (Show)
