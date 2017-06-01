@@ -1,3 +1,4 @@
+import           Control.Monad
 import           System.Directory
 import           System.Environment
 import           System.FilePath
@@ -40,10 +41,12 @@ combineContentWithHandle inputDirectory outputFile = do
   files <- getDirectoryContents inputDirectory
   let correctedFilePath = map ((inputDirectory ++ "/") ++ )
                   (filter (/= "..") (filter (/= ".") files))
-  withFile outputFile WriteMode (\handle -> do
-    mapM (hPutStrLn handle) . ((mapM (readFile) correctedFilePath)))
-    -- content <- (mapM (readFile) correctedFilePath)
-    -- mapM (hPutStrLn handle) content)
+  withFile outputFile WriteMode $ \handle -> do
+    forM_ correctedFilePath $ \element -> do
+      content <- readFile element
+      hPutStrLn handle content
+    -- mapM (hPutStrLn handle) . ((mapM (readFile) correctedFilePath)))
+    -- fold?
   return ()
 
 {-
