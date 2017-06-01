@@ -45,8 +45,6 @@ combineContentWithHandle inputDirectory outputFile = do
     forM_ correctedFilePath $ \element -> do
       content <- readFile element
       hPutStrLn handle content
-    -- mapM (hPutStrLn handle) . ((mapM (readFile) correctedFilePath)))
-    -- fold?
   return ()
 
 {-
