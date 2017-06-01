@@ -2,10 +2,10 @@
 
 import           Data.List
 
-data Html = Text String | Container { tag   :: String
-                               , attributes :: [(String,String)]
-                               , children   :: [Html]
-                               } deriving (Show)
+data Html = Text String | Container  { tag        :: String
+                                     , attributes :: [(String,String)]
+                                     , children   :: [Html]
+                                     } deriving (Show)
 
 data Doctype = Html4 | Html5 | XHtml deriving Show -- Html4 sollte Html heißen
 data Document = Document { doctype     :: Doctype
@@ -13,8 +13,13 @@ data Document = Document { doctype     :: Doctype
                          , bodySection :: Html
                          } deriving (Show)
 
+-- is this needed anymore? and if so, what for?
 createHtml :: String -> [(String, String)] -> Html
-createHtml string  attributes = Container {tag="", attributes= attributes, children=[Text string]}
+createHtml string  attributes = Container {
+                                          tag=""
+                                          , attributes= attributes
+                                          , children=[Text string]
+                                          }
 
 renderAttributes :: [(String, String)] -> String
 renderAttributes [] = " "
@@ -23,14 +28,25 @@ renderAttributes ((name, value):attributes) = name ++ "=\"" ++ value ++ "\""
 
 renderHtml :: Html -> String
 renderHtml (Text text) = text
-renderHtml Container{tag=tag, children=[]} = "<" ++ tag ++ ">" ++ "</" ++ tag ++ ">"
+renderHtml Container{tag=""
+                    , attributes=[]
+                    , children=children
+                    } = (renderHtmlList children)
+renderHtml Container{tag=tag
+                    , attributes=attributes
+                    , children=[]
+                    } = "<" ++ tag ++ (renderAttributes attributes) ++">" ++ "</" ++ tag ++ ">"
 renderHtml Container{tag=tag
                      , attributes=attributes
-                     , children=(child:children)
+                     , children=children
                      } = "<" ++ tag
                          ++ (renderAttributes attributes) ++ ">"
-                         ++ (renderHtml child)
+                         ++ (renderHtmlList children)
                          ++ "</" ++ tag ++ ">"
+
+renderHtmlList :: [Html] -> String
+renderHtmlList []     = ""
+renderHtmlList (x:xs) = (renderHtml x) ++ (renderHtmlList xs)
 
 makeTextNode :: String -> Html
 makeTextNode text =
@@ -38,6 +54,11 @@ makeTextNode text =
     then error "Not valid HTML code"
     else (Text text)
 
+concatHtml :: Html -> Html -> Html
+concatHtml a b = Container {tag=""
+                           , attributes=[]
+                           , children = [a,b]
+                            }
 
 makeDiv :: Html -> Html
 makeDiv a = Container{tag="div", attributes=[], children = [a]}
