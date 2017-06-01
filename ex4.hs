@@ -101,3 +101,12 @@ renderDocument Document{
                       , headSection=headSection
                       , bodySection=bodySection
                       } = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+
+isTextNode :: Html -> Bool
+isTextNode (Text _) = True
+isTextNode _        = False
+
+hasTag :: String -> Html -> Bool
+hasTag askedTag (Container{tag=specifiedTag}) = if askedTag == specifiedTag
+                                                    then True
+                                                    else False
