@@ -24,35 +24,34 @@ createHtml string  attributes = Container {
 renderAttributes :: [(String, String)] -> String
 renderAttributes [] = " "
 renderAttributes ((name, value):attributes) = name ++ "=\"" ++ value ++ "\""
-                                              ++ (renderAttributes attributes)
+                                              ++ renderAttributes attributes
 
 renderHtml :: Html -> String
 renderHtml (Text text) = text
 renderHtml Container{tag=""
                     , attributes=[]
                     , children=children
-                    } = (renderHtmlList children)
+                    } = renderHtmlList children
 renderHtml Container{tag=tag
                     , attributes=attributes
                     , children=[]
-                    } = "<" ++ tag ++ (renderAttributes attributes) ++">" ++ "</" ++ tag ++ ">"
+                    } = "<" ++ tag ++ renderAttributes attributes ++">" ++ "</" ++ tag ++ ">"
 renderHtml Container{tag=tag
                      , attributes=attributes
                      , children=children
                      } = "<" ++ tag
-                         ++ (renderAttributes attributes) ++ ">"
-                         ++ (renderHtmlList children)
+                         ++ renderAttributes attributes ++ ">"
+                         ++ renderHtmlList children
                          ++ "</" ++ tag ++ ">"
 
 renderHtmlList :: [Html] -> String
-renderHtmlList []     = ""
-renderHtmlList (x:xs) = (renderHtml x) ++ (renderHtmlList xs)
+renderHtmlList = foldr (\html outputString -> renderHtml html ++ outputString ) ""
 
 makeTextNode :: String -> Html
 makeTextNode text =
-  if isInfixOf ['<', '>', '=', '&'] text
+  if  ['<', '>', '=', '&'] `isInfixOf` text
     then error "Not valid HTML code"
-    else (Text text)
+    else Text text
 
 concatHtml :: Html -> Html -> Html
 concatHtml a b = Container {tag=""
@@ -88,25 +87,23 @@ renderDocument Document{
                        doctype = Html4
                        , headSection=headSection
                        , bodySection=bodySection
-                       } = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+                       } = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">" ++ renderHtml headSection ++ renderHtml bodySection
 
 renderDocument Document{
                       doctype = Html5
                       , headSection=headSection
                       , bodySection=bodySection
-                      } = "<!DOCTYPE html>" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+                      } = "<!DOCTYPE html>" ++ renderHtml headSection ++ renderHtml bodySection
 
 renderDocument Document{
                       doctype = XHtml
                       , headSection=headSection
                       , bodySection=bodySection
-                      } = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" ++ renderHtml(headSection) ++ renderHtml(bodySection)
+                      } = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" ++ renderHtml headSection ++ renderHtml bodySection
 
 isTextNode :: Html -> Bool
 isTextNode (Text _) = True
 isTextNode _        = False
 
 hasTag :: String -> Html -> Bool
-hasTag askedTag (Container{tag=specifiedTag}) = if askedTag == specifiedTag
-                                                    then True
-                                                    else False
+hasTag askedTag Container{tag=specifiedTag} = askedTag == specifiedTag
